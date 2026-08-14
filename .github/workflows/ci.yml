@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, types, tests, build, contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test -- --ci
+
+      - name: Lint API contracts
+        run: npm run contracts:lint
+
+      - name: Run contract codegen
+        # src/generated/ is gitignored and regenerated on demand (see contracts/README.md),
+        # so this step just proves the spec still produces valid TypeScript.
+        run: npm run contracts:codegen
+
+      - name: Build (web)
+        run: npm run build:web
+
+  dependency-scan:
+    name: Dependency scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (blocking on critical)
+        run: npm audit --audit-level=critical
+
+      - name: npm audit (report high, non-blocking)
+        # Expo/Metro/react-native currently carry several build-tooling-only high
+        # advisories with no non-breaking upstream fix (see README/AGENTS.md). We
+        # track them here without failing CI on pre-existing upstream noise.
+        run: npm audit --audit-level=high || true
+
+  secret-scan:
+    name: Secret scan (full history)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            | tar -xz -C /usr/local/bin gitleaks
+
+      - name: Scan full git history for secrets
+        run: gitleaks detect --source . --config .gitleaks.toml --redact --verbose

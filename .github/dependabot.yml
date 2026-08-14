@@ -1,0 +1,57 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      # Expo SDK and React Native must move together, and only via a deliberate
+      # `expo install`/upgrade pass (see the expo-upgrade skill) — never a lone
+      # Dependabot bump, which will desync the SDK and break native builds.
+      expo-sdk:
+        patterns:
+          - "expo"
+          - "expo-*"
+          - "@expo/*"
+          - "react"
+          - "react-dom"
+          - "react-native"
+          - "react-native-*"
+          - "@sentry/react-native"
+      dev-tooling:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # Every major bump is a coordinated, manual upgrade — not a lone Dependabot PR.
+      # (A minor RN-ecosystem "major" release has broken CI here before; better to
+      # over-block and let a human opt in than let CI red become the norm.)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Expo-managed native modules (including Sentry's RN SDK) must additionally
+      # move together via `expo install`/the expo-upgrade skill — patch only here.
+      - dependency-name: "expo"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react-native"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "expo-*"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "@expo/*"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react-native-*"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "@sentry/react-native"
+        update-types: ["version-update:semver-minor"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "chore(ci)"

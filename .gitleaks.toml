@@ -1,0 +1,10 @@
+title = "react-navive-expo gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Files that legitimately contain placeholder/example values"
+paths = [
+  '''\.env\.example$''',
+]

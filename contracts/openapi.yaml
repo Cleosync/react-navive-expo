@@ -1,0 +1,39 @@
+openapi: 3.1.0
+info:
+  title: Kaviral Creator API
+  version: 0.1.0
+  description: >
+    Source-of-truth contract for the backend API this app consumes.
+    Add real endpoints here as they're built, then run `npm run contracts:codegen`
+    to regenerate `src/generated/api-types.ts`. Never hand-edit that generated file.
+servers:
+  - url: https://api.example.com
+    description: Placeholder — replace with the real backend base URL once known.
+tags:
+  - name: System
+    description: Service-level endpoints (health, status).
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Service health check
+      description: Returns whether the backend service is up and reachable.
+      tags:
+        - System
+      responses:
+        "200":
+          description: The service is healthy.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [ok]

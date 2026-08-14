@@ -1,0 +1,100 @@
+{
+  "name": "react-navive-expo",
+  "main": "index.ts",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "dependencies": {
+    "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
+    "@expo-google-fonts/inter-tight": "^0.4.2",
+    "@expo/ui": "~57.0.10",
+    "@sentry/react-native": "~7.11.0",
+    "expo": "~57.0.12",
+    "expo-constants": "~57.0.10",
+    "expo-dev-client": "~57.0.11",
+    "expo-device": "~57.0.1",
+    "expo-font": "~57.0.1",
+    "expo-glass-effect": "~57.0.1",
+    "expo-image": "~57.0.2",
+    "expo-linking": "~57.0.5",
+    "expo-router": "~57.0.12",
+    "expo-splash-screen": "~57.0.6",
+    "expo-status-bar": "~57.0.1",
+    "expo-symbols": "~57.0.2",
+    "expo-system-ui": "~57.0.2",
+    "expo-updates": "~57.0.13",
+    "expo-web-browser": "~57.0.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-nitro-modules": "^0.36.5",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-unistyles": "^3.3.0",
+    "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.10.1"
+  },
+  "devDependencies": {
+    "@stoplight/spectral-cli": "^6.16.3",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "29.5.14",
+    "@types/react": "~19.2.2",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.1",
+    "jest": "~29.7.0",
+    "jest-expo": "~57.0.4",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "reset-project": "node ./scripts/reset-project.js",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "expo lint",
+    "postinstall": "node ./scripts/generate-expo-env.js",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build:web": "expo export --platform web",
+    "build:dev:android": "eas build --profile development --platform android",
+    "build:dev:ios": "eas build --profile development --platform ios",
+    "build:prev:android": "eas build --profile preview --platform android",
+    "build:prev:ios": "eas build --profile preview --platform ios",
+    "build:prod:android": "eas build --profile production --platform android",
+    "build:prod:ios": "eas build --profile production --platform ios",
+    "build:dev:android:local": "eas build --profile development --platform android --local",
+    "build:dev:ios:local": "eas build --profile development --platform ios --local",
+    "build:prev:android:local": "eas build --profile preview --platform android --local",
+    "build:prev:ios:local": "eas build --profile preview --platform ios --local",
+    "build:prod:android:local": "eas build --profile production --platform android --local",
+    "build:prod:ios:local": "eas build --profile production --platform ios --local",
+    "contracts:lint": "spectral lint contracts/openapi.yaml --ruleset contracts/.spectral.yaml",
+    "contracts:codegen": "openapi-typescript contracts/openapi.yaml -o src/generated/api-types.ts",
+    "secrets:scan": "gitleaks detect --source . --config .gitleaks.toml --verbose --redact",
+    "setup": "node ./scripts/setup.js",
+    "verify": "npm run lint && npm run typecheck && npm run test -- --ci && npm run build:web && npm run contracts:lint && npm run secrets:scan"
+  },
+  "private": true,
+  "overrides": {
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    }
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "moduleNameMapper": {
+      "\\.(css)$": "<rootDir>/scripts/jest/css-mock.js"
+    },
+    "passWithNoTests": true,
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/app/**"
+    ]
+  }
+}
